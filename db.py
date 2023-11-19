@@ -19,6 +19,13 @@ class Database:
         with self.connection:
             return self.cursor.execute("UPDATE `users` SET `tg_name` = ? WHERE `tg_id` = ?", (tg_name, tg_id,))
 
+    def get_nickname(self, tg_id):
+        with self.connection:
+            result = self.cursor.execute("SELECT `tg_name` FROM `users` WHERE `tg_id` = ?", (tg_id,)).fetchall()
+            for row in result:
+                nickname = str(row[0])
+            return nickname
+
     def set_level(self, tg_id, level):
         with self.connection:
             return self.cursor.execute("UPDATE `users` SET `level` =? WHERE `tg_id` = ?", (level, tg_id,))
@@ -27,5 +34,16 @@ class Database:
         with self.connection:
             result = self.cursor.execute("SELECT `level` FROM `users` WHERE `tg_id` = ?", (tg_id,)).fetchall()
             for row in result:
-                level = row[0]
+                level = str(row[0])
             return level
+
+    def set_quiz(self, quiz, tg_id):
+        with self.connection:
+            return self.cursor.execute("UPDATE `users` SET `quiz` = ? WHERE `tg_id` = ?", (quiz, tg_id,))
+
+    def get_quiz(self, tg_id):
+        with self.connection:
+            result = self.cursor.execute("SELECT `quiz` FROM `users` WHERE `tg_id` = ?", (tg_id,)).fetchall()
+            for row in result:
+                quiz = str(row[0])
+            return quiz
