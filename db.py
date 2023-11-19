@@ -1,4 +1,5 @@
 import sqlite3
+from random import sample
 
 
 class Database:
@@ -47,3 +48,8 @@ class Database:
             for row in result:
                 quiz = str(row[0])
             return quiz
+
+    def get_ques(self, num):
+        with self.connection:
+            result = self.cursor.execute("SELECT * FROM `quiz`").fetchall()
+            return sample(result, num)

@@ -47,9 +47,17 @@ async def help_to_user(message: types.Message):
     await message.answer(text="Обратитесь в тех поддержку")
 
 
-@dp.message_handler(commands=["finhelp"])
-async def finhelp(message: types.Message):
-    await message.answer(config.TEXT_FOR_TERM, reply_markup=kb.fin_help)
+@dp.callback_query_handler(lambda x: x.data == "finhelp")
+async def finhelp(callback_query: types.CallbackQuery):
+    await bot.send_message(callback_query.from_user.id, config.TEXT_FOR_TERM, reply_markup=kb.fin_help)
+
+
+@dp.callback_query_handler(lambda x: x.data[:10] == "next_state")
+async def next_state(callback_query: types.CallbackQuery):
+    data = callback_query.data[10:]
+
+    if data == "0":
+        await bot.send_message(callback_query.from_user.id, "")
 
 
 @dp.callback_query_handler(lambda x: x.data[:5] == "curse")
@@ -59,6 +67,7 @@ async def curse(callback_query: types.CallbackQuery):
     data_curse = requests.get('https://www.cbr-xml-daily.ru/daily_json.js').json()
 
     if data == "curse":
+        await bot.delete_message(callback_query.from_user.id, callback_query.message.message_id)
         await bot.send_message(callback_query.from_user.id, "Выберите валюту:", reply_markup=kb.curse)
 
     elif valut == "usd":
@@ -155,6 +164,23 @@ async def curse(callback_query: types.CallbackQuery):
         else:
             await bot.send_message(callback_query.from_user.id,
                                    "Гривень к рублю:\n" + data_curse['Valute'][valut.upper()]['Value'] + " рублей")
+
+
+@dp.callback_query_handler(lambda x: x.data[:4] == "game")
+async def game(callback_query: types.CallbackQuery):
+    data = callback_query.data[4:]
+
+    if data == "no":
+        await bot.delete_message(callback_query.from_user.id, callback_query.message.message_id)
+        await bot.send_message(callback_query.from_user.id, "Праильный выбор, ведь азартные игры это плохо!!")
+
+    elif data == "yes":
+        await bot.delete_message(callback_query.from_user.id, callback_query.message.message_id)
+        await bot.send_message(callback_query.from_user.id, "Не забывайте - азарт это плохо!!")
+
+    else:
+        await bot.send_message(callback_query.from_user.id, "Вы уверены что хотите играть?",
+                               reply_markup=kb.continue_game)
 
 
 if __name__ == '__main__':
