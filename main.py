@@ -49,7 +49,7 @@ async def help_to_user(message: types.Message):
 
 @dp.message_handler(commands=["finhelp"])
 async def finhelp(message: types.Message):
-    await message.answer("Терминология:", reply_markup=kb.fin_help)
+    await message.answer(config.TEXT_FOR_TERM, reply_markup=kb.fin_help)
 
 
 @dp.callback_query_handler(lambda x: x.data[:5] == "curse")
