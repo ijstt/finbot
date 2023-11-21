@@ -17,6 +17,10 @@ fin_help = types.InlineKeyboardMarkup(row_width=1)
 next_state = types.InlineKeyboardButton("Next", callback_data="next_state0")
 fin_help.add(next_state)
 
+next1 = types.InlineKeyboardMarkup(row_width=1)
+n1 = types.InlineKeyboardButton("Next", callback_data="next_state1")
+next1.add(n1)
+
 curse = types.InlineKeyboardMarkup(row_width=2)
 eur = types.InlineKeyboardButton("EUR", callback_data="curseeur")
 usd = types.InlineKeyboardButton("USD", callback_data="curseusd")

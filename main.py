@@ -52,6 +52,11 @@ async def finhelp(callback_query: types.CallbackQuery):
     await bot.send_message(callback_query.from_user.id, config.TEXT_FOR_TERM, reply_markup=kb.fin_help)
 
 
+@dp.callback_query_handler(lambda x: x.data == "next")
+async def next(callback_query: types.CallbackQuery):
+    await bot.send_message(callback_query.from_user.id, config.NEXT_TEXT_FOR_TERM, reply_markup=kb.next1)
+
+
 @dp.callback_query_handler(lambda x: x.data[:10] == "next_state")
 async def next_state(callback_query: types.CallbackQuery):
     data = callback_query.data[10:]
