@@ -13,17 +13,31 @@ game = types.InlineKeyboardButton("Игра", callback_data="game")
 finhelp = types.InlineKeyboardButton("Справочная информация", callback_data="finhelp")
 menu_next.add(finhelp, convert, curse, quiz, game)
 
-lk_cab = types.ReplyKeyboardMarkup()
-btnback = types.KeyboardButton("Вернуться в бота⬅")
+lk_cab = types.ReplyKeyboardMarkup(resize_keyboard=True)
+btnback = types.KeyboardButton("Вернуться в бота ⬅")
 lk_cab.add(btnback)
 
 fin_help = types.InlineKeyboardMarkup(row_width=1)
-next_state = types.InlineKeyboardButton("Next", callback_data="next_state0")
+next_state = types.InlineKeyboardButton("Далее", callback_data="next_state0")
 fin_help.add(next_state)
 
 next1 = types.InlineKeyboardMarkup(row_width=1)
-n1 = types.InlineKeyboardButton("Next", callback_data="next_state1")
+n1 = types.InlineKeyboardButton("Далее", callback_data="next_state1")
 next1.add(n1)
+
+next2 = types.InlineKeyboardMarkup(row_width=1)
+b2 = types.InlineKeyboardButton("Назад", callback_data="back_state2")
+n2 = types.InlineKeyboardButton("Далее", callback_data="next_state2")
+next2.add(b2, n2)
+
+next3 = types.InlineKeyboardMarkup(row_width=1)
+b3 = types.InlineKeyboardButton("Назад", callback_data="back_state3")
+n3 = types.InlineKeyboardButton("Далее", callback_data="next_state3")
+next3.add(b3, n3)
+
+next4 = types.InlineKeyboardMarkup(row_width=1)
+b4 = types.InlineKeyboardButton("Назад", callback_data="back_state4")
+next4.add(b4)
 
 curse = types.InlineKeyboardMarkup(row_width=2)
 eur = types.InlineKeyboardButton("EUR", callback_data="curseeur")
@@ -35,8 +49,8 @@ uah = types.InlineKeyboardButton("UAH", callback_data="curseuah")
 curse.add(eur, usd, cny, kzt, byn, uah)
 
 continue_game = types.InlineKeyboardMarkup(row_width=2)
-yes = types.InlineKeyboardButton("YES", callback_data="gameyes")
-no = types.InlineKeyboardButton("NO", callback_data="gameno")
+yes = types.InlineKeyboardButton("Да!", callback_data="gameyes")
+no = types.InlineKeyboardButton("Нет", callback_data="gameno")
 continue_game.add(yes, no)
 
 quiz_dt = types.InlineKeyboardMarkup(row_width=2)

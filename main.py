@@ -51,6 +51,11 @@ def get_max_ball(quiz_level):
     return max_ball
 
 
+def parse_currency():
+    data_curse = requests.get('https://www.cbr-xml-daily.ru/daily_json.js').json()
+    return data_curse['Valute']
+
+
 @dp.message_handler(commands=["start"])
 async def start(message: types.Message):
     if not db.user_exists(message.from_user.id):
@@ -67,7 +72,7 @@ async def mycabinet(message: types.Message):
     full_name = message.from_user.full_name
     await message.answer(f"Твой ник - {full_name}\n"
                          f"Баллы за викторину - "
-                         f"{db.get_quiz(id)} из {get_max_ball(db.get_quiz_lvl(id))} баллов")
+                         f"{db.get_quiz(id)} из {get_max_ball(db.get_quiz_lvl(id))} баллов", reply_markup=kb.lk_cab)
 
 
 @dp.message_handler(text=["Меню"])
@@ -82,20 +87,45 @@ async def help_to_user(message: types.Message):
 
 @dp.callback_query_handler(lambda x: x.data == "finhelp")
 async def finhelp(callback_query: types.CallbackQuery):
-    await bot.send_message(callback_query.from_user.id, config.TEXT_FOR_TERM, reply_markup=kb.fin_help)
+    await bot.send_message(callback_query.from_user.id, config.TEXT_FOR_TERM, reply_markup=kb.next1)
 
 
-@dp.callback_query_handler(lambda x: x.data == "next")
-async def next(callback_query: types.CallbackQuery):
-    await bot.send_message(callback_query.from_user.id, config.NEXT_TEXT_FOR_TERM, reply_markup=kb.next1)
-
-
-@dp.callback_query_handler(lambda x: x.data[:10] == "next_state")
+@dp.callback_query_handler(lambda x: x.data[:4] == "next")
 async def next_state(callback_query: types.CallbackQuery):
     data = callback_query.data[10:]
 
-    if data == "0":
-        await bot.send_message(callback_query.from_user.id, "asd")
+    if data == "1":
+        await bot.send_message(callback_query.from_user.id, config.TEXT_FOR_TERM2, reply_markup=kb.next2)
+        await bot.delete_message(callback_query.from_user.id, callback_query.message.message_id)
+
+    if data == "2":
+        await bot.send_message(callback_query.from_user.id, config.TEXT_FOR_TERM3, reply_markup=kb.next3)
+        await bot.delete_message(callback_query.from_user.id, callback_query.message.message_id)
+
+    if data == "3":
+        await bot.send_message(callback_query.from_user.id, config.TEXT_FOR_TERM4, reply_markup=kb.next4)
+        await bot.delete_message(callback_query.from_user.id, callback_query.message.message_id)
+
+
+@dp.callback_query_handler(lambda x: x.data[:4] == "back")
+async def back_state(callback_query: types.CallbackQuery):
+    data = callback_query.data[10:]
+
+    if data == "3":
+        await bot.send_message(callback_query.from_user.id, config.TEXT_FOR_TERM2, reply_markup=kb.next2)
+        await bot.delete_message(callback_query.from_user.id, callback_query.message.message_id)
+
+    if data == "4":
+        await bot.send_message(callback_query.from_user.id, config.TEXT_FOR_TERM3, reply_markup=kb.next3)
+        await bot.delete_message(callback_query.from_user.id, callback_query.message.message_id)
+
+    if data == "1":
+        await bot.send_message(callback_query.from_user.id, config.TEXT_FOR_TERM4, reply_markup=kb.next4)
+        await bot.delete_message(callback_query.from_user.id, callback_query.message.message_id)
+
+    else:
+        await bot.send_message(callback_query.from_user.id, config.TEXT_FOR_TERM, reply_markup=kb.next1)
+        await bot.delete_message(callback_query.from_user.id, callback_query.message.message_id)
 
 
 @dp.callback_query_handler(lambda x: x.data[:5] == "curse")
@@ -579,7 +609,7 @@ async def check_quiz(callback_query: types.CallbackQuery):
 async def end_que(callback_query: types.CallbackQuery):
     await bot.send_message(callback_query.from_user.id,
                            f"Вы набрали - "
-                           f"{db.get_quiz(callback_query.from_user.id)} из {get_max_ball(db.get_quiz(id))} баллов")
+                           f"{db.get_quiz(callback_query.from_user.id)} из {get_max_ball(db.get_quiz_lvl(callback_query.from_user.id))} баллов")
 
 
 @dp.message_handler(text=["Вернуться в бота⬅"])
