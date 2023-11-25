@@ -7,7 +7,9 @@ from aiogram.contrib.fsm_storage.memory import MemoryStorage
 
 import config
 import keyboard as kb
+import main_casino
 from db import Database
+from main_casino import *
 
 logging.basicConfig(level=logging.INFO)
 storage = MemoryStorage()
@@ -16,6 +18,39 @@ bot = Bot(token=config.TOKEN)
 dp = Dispatcher(bot, storage=storage)
 
 db = Database("fin.db")
+
+
+def get_max_ball(current_ball, quiz_level):
+    max_ball = 0
+    if quiz_level == "easy":
+        max_ball = 6 * 100 // current_ball
+    elif quiz_level == "medium":
+        max_ball = 9 * 100 // current_ball
+    elif quiz_level == "hard":
+        max_ball = 12 * 100 // current_ball
+
+    return max_ball
+
+
+def get_level(current_ball, current_level, quiz_level):
+    max_ball = get_max_ball(current_ball, quiz_level)
+
+    if max_ball > 66:
+        lvl = "excelent"
+    elif 33 <= max_ball <= 66:
+        lvl = "norm"
+    else:
+        lvl = "bad"
+
+    lvls = ["bad", "norm", "excelent"]
+
+    new_lvl = 0
+    if lvls.index(current_level) <= lvls.index(lvl):
+        new_lvl = lvl
+    elif lvls.index(current_level) > lvls.index(lvl):
+        new_lvl = current_level
+
+    return new_lvl
 
 
 @dp.message_handler(commands=["start"])
@@ -35,7 +70,8 @@ async def mycabinet(message: types.Message):
     full_name = message.from_user.full_name
     await message.answer(f"Твой ник - {full_name}\n"
                          f"Уровень знаний - {db.get_level(id)}\n"
-                         f"Баллы за викторину - {db.get_quiz(id)}")
+                         f"Баллы за викторину - "
+                         f"{db.get_quiz(id)} из {get_max_ball(int(db.get_quiz(id)), db.get_quiz_lvl(id)) - 1} баллов")
 
 
 @dp.message_handler(text=["Меню"])
@@ -210,12 +246,12 @@ async def quiz(callback_query: types.CallbackQuery):
 
         elif data[4:] == "medium":
             db.set_quiz_lvl("medium", callback_query.from_user.id)
-            db.set_data_quest(db.get_ques(9), callback_query.from_user.id)
+            db.set_data_quest(db.get_ques(10), callback_query.from_user.id)
             await check_quiz(callback_query)
 
         elif data[4:] == "hard":
             db.set_quiz_lvl("hard", callback_query.from_user.id)
-            db.set_data_quest(db.get_ques(11), callback_query.from_user.id)
+            db.set_data_quest(db.get_ques(13), callback_query.from_user.id)
             await check_quiz(callback_query)
         await bot.delete_message(callback_query.from_user.id, callback_query.message.message_id)
     else:
@@ -235,6 +271,8 @@ async def check_quiz(callback_query: types.CallbackQuery):
         flag = True
         await bot.delete_message(id_que, callback_query.message.message_id)
         await bot.send_message(id_que, "Вы ответили на все вопросы!", reply_markup=kb.maker(3, True))
+        lvl = get_level(int(db.get_quiz(id_que)), db.get_quiz_lvl(id_que), str(db.get_level(id_que)))
+        db.set_level(id_que, lvl)
 
     else:
         nm = list(ast.literal_eval(data))[int(num)][3]
@@ -254,7 +292,9 @@ async def check_quiz(callback_query: types.CallbackQuery):
 @dp.callback_query_handler(lambda x: x.data == "end")
 async def end_que(callback_query: types.CallbackQuery):
     await bot.send_message(callback_query.from_user.id,
-                           f"Вы набрали - {db.get_quiz(callback_query.from_user.id)} из ... баллов")
+                           f"Вы набрали - "
+                           f"{db.get_quiz(callback_query.from_user.id)} из "
+                           f"{get_max_ball(int(db.get_quiz(callback_query.from_user.id)), int(db.get_quiz_lvl(callback_query.from_user.id))) - 1} баллов")
 
 
 if __name__ == '__main__':
