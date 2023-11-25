@@ -27,17 +27,6 @@ class Database:
                 nickname = str(row[0])
             return nickname
 
-    def set_level(self, tg_id, level):
-        with self.connection:
-            return self.cursor.execute("UPDATE `users` SET `level` =? WHERE `tg_id` = ?", (level, tg_id,))
-
-    def get_level(self, tg_id):
-        with self.connection:
-            result = self.cursor.execute("SELECT `level` FROM `users` WHERE `tg_id` = ?", (tg_id,)).fetchall()
-            for row in result:
-                level = str(row[0])
-            return level
-
     def set_quiz(self, quiz, tg_id):
         with self.connection:
             return self.cursor.execute("UPDATE `users` SET `quiz` = ? WHERE `tg_id` = ?", (quiz, tg_id,))

@@ -13,6 +13,10 @@ game = types.InlineKeyboardButton("Игра", callback_data="game")
 finhelp = types.InlineKeyboardButton("Справочная информация", callback_data="finhelp")
 menu_next.add(finhelp, convert, curse, quiz, game)
 
+lk_cab = types.ReplyKeyboardMarkup()
+btnback = types.KeyboardButton("Вернуться в бота⬅")
+lk_cab.add(btnback)
+
 fin_help = types.InlineKeyboardMarkup(row_width=1)
 next_state = types.InlineKeyboardButton("Next", callback_data="next_state0")
 fin_help.add(next_state)
