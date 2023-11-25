@@ -1,5 +1,6 @@
 import logging
 import requests
+import ast
 
 from aiogram import Bot, Dispatcher, types, executor
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
@@ -186,6 +187,74 @@ async def game(callback_query: types.CallbackQuery):
     else:
         await bot.send_message(callback_query.from_user.id, "Вы уверены что хотите играть?",
                                reply_markup=kb.continue_game)
+
+
+@dp.callback_query_handler(lambda x: x.data[:4] == "quiz")
+async def quiz(callback_query: types.CallbackQuery):
+    data = callback_query.data
+    if int(db.get_num_que(callback_query.from_user.id)) == 0:
+
+        if data == "quiz":
+            await bot.send_message(callback_query.from_user.id, "Хотиете ли вы начать тест?", reply_markup=kb.quiz_dt)
+
+        elif data[4:] == "yes":
+            await bot.send_message(callback_query.from_user.id, "Выберите сложность:", reply_markup=kb.qualiti)
+
+        elif data[4:] == "no":
+            await bot.send_message(callback_query.from_user.id, "Вы вернулись назад")
+
+        elif data[4:] == "easy":
+            db.set_quiz_lvl("easy", callback_query.from_user.id)
+            db.set_data_quest(db.get_ques(7), callback_query.from_user.id)
+            await check_quiz(callback_query)
+
+        elif data[4:] == "medium":
+            db.set_quiz_lvl("medium", callback_query.from_user.id)
+            db.set_data_quest(db.get_ques(9), callback_query.from_user.id)
+            await check_quiz(callback_query)
+
+        elif data[4:] == "hard":
+            db.set_quiz_lvl("hard", callback_query.from_user.id)
+            db.set_data_quest(db.get_ques(11), callback_query.from_user.id)
+            await check_quiz(callback_query)
+        await bot.delete_message(callback_query.from_user.id, callback_query.message.message_id)
+    else:
+        await bot.send_message(callback_query.from_user.id,
+                               "Вы уже прошли викторину, с вашими баллами вы можете ознакомиться в личном кабинете")
+
+
+@dp.callback_query_handler(lambda x: x.data in "АБВГ")
+async def check_quiz(callback_query: types.CallbackQuery):
+    ans = callback_query.data
+    id_que = callback_query.from_user.id
+    data = db.get_data_quest(id_que)
+    num = int(db.get_num_que(id_que))
+    flag = False
+
+    if num == len(ast.literal_eval(data)):
+        flag = True
+        await bot.delete_message(id_que, callback_query.message.message_id)
+        await bot.send_message(id_que, "Вы ответили на все вопросы!", reply_markup=kb.maker(3, True))
+
+    else:
+        nm = list(ast.literal_eval(data))[int(num)][3]
+        await bot.send_message(id_que, text=list(ast.literal_eval(data))[num][1], reply_markup=kb.maker(nm, False))
+        que = num + 1
+        db.set_num_que(que, id_que)
+
+    if not flag:
+        if ans in list(ast.literal_eval(data))[num - 1][2]:
+            ball = int(db.get_quiz(id_que))
+            db.set_quiz(ball + 1, id_que)
+
+        if num != 0:
+            await bot.delete_message(id_que, callback_query.message.message_id)
+
+
+@dp.callback_query_handler(lambda x: x.data == "end")
+async def end_que(callback_query: types.CallbackQuery):
+    await bot.send_message(callback_query.from_user.id,
+                           f"Вы набрали - {db.get_quiz(callback_query.from_user.id)} из ... баллов")
 
 
 if __name__ == '__main__':

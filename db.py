@@ -53,3 +53,36 @@ class Database:
         with self.connection:
             result = self.cursor.execute("SELECT * FROM `quiz`").fetchall()
             return sample(result, num)
+
+    def set_quiz_lvl(self, lvl, tg_id):
+        with self.connection:
+            return self.cursor.execute("UPDATE `users` SET `quiz_lvl` = ? WHERE `tg_id` = ?", (lvl, tg_id,))
+
+    def get_quiz_lvl(self, tg_id):
+        with self.connection:
+            result = self.cursor.execute("SELECT `quiz_lvl` FROM `users` WHERE `tg_id` = ?", (tg_id,)).fetchall()
+            for row in result:
+                lvl = str(row[0])
+            return lvl
+
+    def set_num_que(self, num, tg_id):
+        with self.connection:
+            return self.cursor.execute("UPDATE `users` SET `num_que` = ? WHERE `tg_id` = ?", (str(num), tg_id,))
+
+    def get_num_que(self, tg_id):
+        with self.connection:
+            result = self.cursor.execute("SELECT `num_que` FROM `users` WHERE `tg_id` = ?", (tg_id,)).fetchall()
+            for row in result:
+                num = int(row[0])
+            return num
+
+    def set_data_quest(self, data, tg_id):
+        with self.connection:
+            return self.cursor.execute("INSERT INTO `que_user` (`tg_id`,`quest_data`) VALUES (?, ?)", (tg_id, str(data),))
+
+    def get_data_quest(self, tg_id):
+        with self.connection:
+            result = self.cursor.execute("SELECT `quest_data` FROM `que_user` WHERE `tg_id` = ?", (tg_id,)).fetchall()
+            for row in result:
+                data = str(row[0])
+            return data

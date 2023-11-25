@@ -34,3 +34,29 @@ continue_game = types.InlineKeyboardMarkup(row_width=2)
 yes = types.InlineKeyboardButton("YES", callback_data="gameyes")
 no = types.InlineKeyboardButton("NO", callback_data="gameno")
 continue_game.add(yes, no)
+
+quiz_dt = types.InlineKeyboardMarkup(row_width=2)
+yes = types.InlineKeyboardButton("Конечно!", callback_data="quizyes")
+no = types.InlineKeyboardButton("Пожалуй нет", callback_data="quizno")
+quiz_dt.add(yes, no)
+
+qualiti = types.InlineKeyboardMarkup(row_width=3)
+easy = types.InlineKeyboardButton("Легко", callback_data="quizeasy")
+medium = types.InlineKeyboardButton("Средне", callback_data="quizmedium")
+hard = types.InlineKeyboardButton("Сложно", callback_data="quizhard")
+qualiti.add(easy, medium, hard)
+
+
+def maker(num, flag: False):
+    abc = "АБВГ"
+    tmp_abc = types.InlineKeyboardMarkup(row_width=num)
+    for i in range(num):
+        btn = types.InlineKeyboardButton(abc[i], callback_data=abc[i])
+        tmp_abc.add(btn)
+
+    if flag:
+        tmp_markup = types.InlineKeyboardMarkup()
+        btn = types.InlineKeyboardButton("Завершить", callback_data="end")
+        tmp_markup.add(btn)
+        return tmp_markup
+    return tmp_abc
