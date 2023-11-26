@@ -14,7 +14,7 @@ finhelp = types.InlineKeyboardButton("Справочная информация"
 menu_next.add(finhelp, convert, curse, quiz, game)
 
 lk_cab = types.ReplyKeyboardMarkup(resize_keyboard=True)
-btnback = types.KeyboardButton("Вернуться в бота ⬅")
+btnback = types.KeyboardButton("Вернуться в бота⬅")
 lk_cab.add(btnback)
 
 fin_help = types.InlineKeyboardMarkup(row_width=1)
@@ -74,7 +74,7 @@ def maker(num, flag: False):
 
     if flag:
         tmp_markup = types.InlineKeyboardMarkup()
-        btn = types.InlineKeyboardButton("Завершить", callback_data="end")
+        btn = types.InlineKeyboardButton("Завершить викторину", callback_data="end")
         tmp_markup.add(btn)
         return tmp_markup
     return tmp_abc
