@@ -1,4 +1,5 @@
 # finbot
 
-to start - main.py\n
+to start - main.py
+
 bot - @infofinrus_bot
